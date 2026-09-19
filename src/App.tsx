@@ -265,6 +265,7 @@ function App() {
               <div className="mb-4 flex items-start justify-between">
                 <div>
                   <h1 className="text-[26px] font-semibold tracking-tight">Who would you rather meet?</h1>
+                  <p className="text-[10px] text-muted mt-0.5">_Pearlouise</p>
                   <p className="mt-1 text-sm text-muted">{round((state.pairIndex % 52) + 1)} / 52</p>
                 </div>
                 <button onClick={() => setPaywallOpen(true)} className="rounded-full border border-border px-3 py-2 text-xs text-muted">
