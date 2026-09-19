@@ -1,9 +1,0 @@
-{
-  "name": "HotorBot Demo",
-  "short_name": "HotorBot",
-  "display": "standalone",
-  "background_color": "#090b10",
-  "theme_color": "#090b10",
-  "start_url": "/",
-  "icons": []
-}
