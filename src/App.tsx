@@ -121,18 +121,11 @@ function App() {
     const totalWins = Object.values(state.stats).reduce((sum, stat) => sum + stat.wins, 0)
     const totalLosses = Object.values(state.stats).reduce((sum, stat) => sum + stat.losses, 0)
     const picked = 68
-    const clearly = 47
-    const barely = 21
-    const passed = Math.max(0, 100 - clearly - barely)
     const wins = totalWins || 1
-    const insight = clearly > barely
-      ? 'When you win, it is usually clearly. Strong reactions are beating lukewarm ones.'
-      : 'You are competitive in close calls. A stronger opening clip could turn more barely picks into clear ones.'
+    const insight = 'You are in the top 20% for your age group in Austin. Keep adding fresh clips to stay competitive.'
     return {
       picked,
-      clearly,
-      barely,
-      passed,
+      passed: Math.max(0, 100 - picked),
       percentile: 20,
       insight,
       totalWins: wins,
@@ -269,7 +262,7 @@ function App() {
                   <p className="mt-1 text-sm text-muted">{round((state.pairIndex % 52) + 1)} / 52</p>
                 </div>
                 <button onClick={() => setPaywallOpen(true)} className="rounded-full border border-border px-3 py-2 text-xs text-muted">
-                  7 people picked you
+                  7 people picked you ›
                 </button>
               </div>
 
@@ -289,15 +282,15 @@ function App() {
                         playsInline
                         className="h-full w-full object-cover"
                       />
-                      <div className="absolute inset-x-0 bottom-0 bg-black/55 p-4 backdrop-blur-sm">
-                        <div className="mb-2 flex items-center gap-2">
-                          <span className="text-xl font-semibold">{person.name}, {person.age}</span>
-                          {person.verified && <span className="rounded-full border border-accent/40 px-2 py-0.5 text-[10px] uppercase tracking-[0.24em] text-accent">Verified</span>}
-                          {person.isSynthetic && <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-muted">AI demo profile</span>}
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/60 to-transparent p-4 pt-8">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-2xl font-bold">{person.name}</span>
+                          <span className="text-lg text-white/80">{person.age}</span>
+                          <span className="ml-auto text-sm font-semibold text-accent">{person.height}</span>
                         </div>
-                        <p className="text-sm text-slate-200">{person.distance}</p>
-                        <p className="mt-2 text-sm text-white/90">Prompt: {person.prompt}</p>
-                        <p className="mt-2 text-sm text-accent">{active ? 'Audio on' : 'Tap to hear clip'}</p>
+                        <p className="mt-1 text-sm font-medium text-white/90">{person.profession}</p>
+                        <p className="text-xs text-white/60">{person.education}</p>
+                        <p className="mt-1.5 text-[10px] text-accent/70">{active ? '🔊 audio on' : 'tap to hear'}</p>
                       </div>
                       <div className="absolute left-4 top-4 rounded-full bg-black/55 px-3 py-1 text-xs font-medium backdrop-blur-sm">{side}</div>
                     </button>
@@ -305,45 +298,17 @@ function App() {
                 })}
               </div>
 
-              {showReactionStep && lastWinner && (
-                <div className="mt-4 rounded-[24px] border border-border bg-panel p-4">
-                  <p className="text-sm text-muted">What pushed {lastWinner.name} over the top?</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {reactionChips.map((chip) => (
-                      <button key={chip} onClick={() => submitReaction(chip)} className="rounded-full border border-border px-3 py-2 text-sm">
-                        {chip}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {showRatingStep && lastWinner && (
-                <div className="mt-4 rounded-[24px] border border-border bg-panel p-4">
-                  <p className="text-sm text-muted">How strong was the pull toward {lastWinner.name}?</p>
-                  <div className="mt-3 grid grid-cols-5 gap-2">
-                    {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
-                      <button key={n} onClick={() => submitRating(n)} className={`rounded-2xl px-0 py-3 text-sm ${n > 5 ? accent : 'border border-border bg-slate-900'}`}>
-                        {n}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {!showReactionStep && !showRatingStep && (
+              {(
                 <div className="mt-4 grid grid-cols-2 gap-3">
-                  <button onClick={() => recordVote(personA, personB, 'clearly')} className={`rounded-[22px] px-4 py-4 text-sm font-semibold ${accent}`}>A, clearly</button>
-                  <button onClick={() => recordVote(personB, personA, 'clearly')} className={`rounded-[22px] px-4 py-4 text-sm font-semibold ${accent}`}>B, clearly</button>
-                  <button onClick={() => recordVote(personA, personB, 'barely')} className="rounded-[22px] border border-border bg-panel px-4 py-4 text-sm font-semibold">A, barely</button>
-                  <button onClick={() => recordVote(personB, personA, 'barely')} className="rounded-[22px] border border-border bg-panel px-4 py-4 text-sm font-semibold">B, barely</button>
+                  <button onClick={() => recordVote(personA, personB, 'clearly')} className={`rounded-[22px] px-4 py-5 text-base font-semibold ${accent}`}>{personA.name}</button>
+                  <button onClick={() => recordVote(personB, personA, 'clearly')} className={`rounded-[22px] px-4 py-5 text-base font-semibold ${accent}`}>{personB.name}</button>
                 </div>
               )}
 
               <div className="mt-4 flex items-center justify-between rounded-[24px] border border-border bg-panel px-4 py-3">
                 <div>
                   <p className="text-sm font-medium">7 people picked you</p>
-                  <p className="text-xs text-muted">See who picked you clearly</p>
+                  <p className="text-xs text-muted">See who picked you</p>
                 </div>
                 <button onClick={() => setPaywallOpen(true)} className="text-sm text-accent underline underline-offset-4">See who</button>
               </div>
@@ -353,7 +318,7 @@ function App() {
           {tab === 'matches' && !callMatch && (
             <div className="px-4 pt-5">
               <h2 className="text-[28px] font-semibold tracking-tight">Matches</h2>
-              <p className="mt-1 text-sm text-muted">Mutual picks. Then a three-minute video date.</p>
+              <p className="mt-1 text-sm text-muted">Mutual picks. Then a three-minute video date scheduled at your convenience.</p>
               <div className="mt-4 space-y-3">
                 {matches.map((match) => (
                   <div key={match.personId} className="rounded-[26px] border border-border bg-panel p-4">
@@ -373,7 +338,7 @@ function App() {
                       }}
                       className={`mt-4 w-full rounded-[22px] px-4 py-4 text-sm font-semibold ${accent}`}
                     >
-                      Start 3-minute video date
+                      Schedule 3-minute video date
                     </button>
                   </div>
                 ))}
@@ -425,14 +390,12 @@ function App() {
                 <p className="mt-2 text-sm text-muted">Top {yourStats.percentile}% in Austin, 31-36</p>
                 <div className="mt-4 overflow-hidden rounded-full bg-slate-800">
                   <div className="flex h-3 w-full">
-                    <div className="bg-accent" style={{ width: `${yourStats.clearly}%` }} />
-                    <div className="bg-slate-500" style={{ width: `${yourStats.barely}%` }} />
+                    <div className="bg-accent" style={{ width: `${yourStats.picked}%` }} />
                     <div className="bg-slate-700" style={{ width: `${yourStats.passed}%` }} />
                   </div>
                 </div>
                 <div className="mt-3 flex justify-between text-xs text-muted">
-                  <span>{yourStats.clearly}% clearly</span>
-                  <span>{yourStats.barely}% barely</span>
+                  <span>{yourStats.picked}% picked you</span>
                   <span>{yourStats.passed}% passed</span>
                 </div>
               </div>
@@ -459,7 +422,7 @@ function App() {
 
               <div className="mt-4 flex items-center justify-between rounded-[24px] border border-border bg-panel px-4 py-4">
                 <div>
-                  <p className="text-sm font-medium">12 people picked you clearly</p>
+                  <p className="text-sm font-medium">12 people picked you</p>
                   <p className="text-xs text-muted">See who</p>
                 </div>
                 <button onClick={() => setPaywallOpen(true)} className="text-sm text-accent underline underline-offset-4">See who</button>
@@ -488,8 +451,8 @@ function App() {
           <div className="fixed inset-0 z-50 flex items-end bg-black/70 p-3">
             <div className="w-full rounded-t-[32px] border border-border bg-panel p-5">
               <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-600" />
-              <p className="text-2xl font-semibold">See who picked you clearly</p>
-              <p className="mt-2 text-sm text-muted">Unlock the names behind those strong reactions.</p>
+              <p className="text-2xl font-semibold">See who picked you</p>
+              <p className="mt-2 text-sm text-muted">Unlock the names behind the picks.</p>
               <div className="mt-5 rounded-[24px] border border-border bg-slate-950 p-4">
                 <p className="text-sm text-muted">Monthly</p>
                 <p className="mt-1 text-3xl font-semibold">$9.99</p>
